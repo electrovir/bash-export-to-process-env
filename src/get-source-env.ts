@@ -1,18 +1,25 @@
-import {isTruthy, safeMatch} from 'augment-vir';
-import {
-    interpolationSafeWindowsPath,
-    randomString,
-    runShellCommand,
-} from 'augment-vir/dist/cjs/node-only';
-import {filterOutCurrentEnv} from './filter-env';
+import {isTruthy, safeMatch} from '@augment-vir/common';
+import {interpolationSafeWindowsPath, runShellCommand} from '@augment-vir/node-js';
+import {filterOutCurrentEnv, removeSpecialShellVariables} from './filter-env';
 
+/**
+ * Random deliminator output from `randomString(128)` from `@augment-vir/common`.
+ *
+ * `randomString(128)` isn't used directly because a direct dependency of this package does not
+ * support Node.js v20 yet, and @augment-vir/common's `randomString` export does not support Node
+ * versions <20.
+ */
+const randomDeliminator =
+    '761dbb1369a6c269ebb72e854526f4c72135be4920e445439bc504dc4643be322fa9e76f9449580495831a1e46e3f3497d477d6c5d24b8a6954aee266f2daaa2';
+
+/** Executes a bash script and reads the new env that it populates. */
 export async function getNewEnvFromScript(
     shellFilePath: string,
 ): Promise<Readonly<Record<string, string>>> {
-    const deliminator = randomString(128);
-
     const output = await runShellCommand(
-        `source "${interpolationSafeWindowsPath(shellFilePath)}"; printf "${deliminator}"; env -0;`,
+        `source "${interpolationSafeWindowsPath(
+            shellFilePath,
+        )}"; printf "${randomDeliminator}"; env -0;`,
         {
             rejectOnError: true,
         },
@@ -21,7 +28,7 @@ export async function getNewEnvFromScript(
     const [
         ,
         envOutput,
-    ] = output.stdout.trim().split(deliminator);
+    ] = output.stdout.trim().split(randomDeliminator);
 
     /** There's no way to intentionally trigger the undefined case for the following optional chain */
     /* istanbul ignore next */
@@ -39,5 +46,7 @@ export async function getNewEnvFromScript(
         },
     );
 
-    return filterOutCurrentEnv(Object.fromEntries(envVarNamesAndValues));
+    const newEnvVars = filterOutCurrentEnv(Object.fromEntries(envVarNamesAndValues));
+
+    return removeSpecialShellVariables(newEnvVars);
 }
