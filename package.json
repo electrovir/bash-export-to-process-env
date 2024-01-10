@@ -1,6 +1,6 @@
 {
     "name": "bash-export-to-process-env",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "",
     "keywords": [],
     "homepage": "https://github.com/electrovir/bash-export-to-process-env",
@@ -19,21 +19,17 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "virmator frontend build",
         "compile": "rm -rf dist && virmator compile",
         "docs": "virmator docs",
         "format": "virmator format",
-        "prepublishOnly": "npm run compile && npm run test:all",
-        "preview": "virmator frontend preview",
-        "start": "npm install && virmator frontend",
+        "publish": "virmator publish \"npm run compile && npm run test:all\"",
         "test": "virmator test && npm run test:types",
         "test:all": "concurrently --colors --kill-others-on-fail -c auto --names types,tests,spelling,format,docs,deps \"npm run test:types\" \"npm run test\" \"npm run test:spelling\" \"npm run test:format\" \"npm run test:docs\" \"npm run test:deps\"",
         "test:deps": "virmator deps check",
         "test:docs": "virmator docs check",
         "test:format": "virmator format check",
         "test:spelling": "virmator spellcheck",
-        "test:types": "tsc --noEmit",
-        "test:web": "virmator test-web"
+        "test:types": "tsc --noEmit"
     },
     "dependencies": {
         "@augment-vir/common": "^22.4.0",
@@ -66,7 +62,7 @@
         "prettier-plugin-toml": "^2.0.1",
         "ts-node": "^10.9.2",
         "typedoc": "^0.25.7",
-        "typescript": "^5.3.3",
+        "typescript": "^5.2.2",
         "virmator": "^11.1.5"
     }
 }
