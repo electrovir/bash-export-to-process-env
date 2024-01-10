@@ -1,6 +1,6 @@
 import {isTruthy, safeMatch} from '@augment-vir/common';
 import {interpolationSafeWindowsPath, runShellCommand} from '@augment-vir/node-js';
-import {filterOutCurrentEnv, removeSpecialShellVariables} from './filter-env';
+import {filterOutCurrentEnvVars} from './filter-env';
 
 /**
  * Random deliminator output from `randomString(128)` from `@augment-vir/common`.
@@ -12,7 +12,11 @@ import {filterOutCurrentEnv, removeSpecialShellVariables} from './filter-env';
 const randomDeliminator =
     '761dbb1369a6c269ebb72e854526f4c72135be4920e445439bc504dc4643be322fa9e76f9449580495831a1e46e3f3497d477d6c5d24b8a6954aee266f2daaa2';
 
-/** Executes a bash script and reads the new env that it populates. */
+/**
+ * Executes a bash script and reads the new env that it populates. Note that in some systems this
+ * will result in a lot of ENV variables that you might not be expecting, or that you don't care
+ * about, so you should expect to see extra keys in the object returned by this that you won't use.
+ */
 export async function getNewEnvFromScript(
     shellFilePath: string,
 ): Promise<Readonly<Record<string, string>>> {
@@ -46,7 +50,5 @@ export async function getNewEnvFromScript(
         },
     );
 
-    const newEnvVars = filterOutCurrentEnv(Object.fromEntries(envVarNamesAndValues));
-
-    return removeSpecialShellVariables(newEnvVars);
+    return filterOutCurrentEnvVars(Object.fromEntries(envVarNamesAndValues));
 }
