@@ -15,6 +15,11 @@ const specialEnvVarKeysToRemove = [
      * https://askubuntu.com/q/1198935 for details (or search for the "underscore" variable).
      */
     '_',
+    /**
+     * Increased each level a shell is created. Only exists in some environments.
+     * https://unix.stackexchange.com/q/416518
+     */
+    'SHLVL',
 ];
 
 /** Remove special env variables that nobody wants to see. */
